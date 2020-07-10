@@ -29,6 +29,10 @@
 
 #include "rviz_cinematographer_view_controller/rviz_cinematographer_view_controller.h"
 
+#include <rviz/display_group.h>
+#include <rviz/display.h>
+#include <unordered_set>
+
 namespace rviz_cinematographer_view_controller
 {
 using namespace rviz;
@@ -112,6 +116,7 @@ CinematographerViewController::CinematographerViewController()
   image_transport::ImageTransport it(nh_);
   image_pub_ = it.advertise("/rviz/view_image", 1);
 
+  enable_sub_ = nh_.subscribe("/rviz/enable_displays", 1, &CinematographerViewController::enableDisplaysCallback, this);
   record_params_sub_ = nh_.subscribe("/rviz/record", 1, &CinematographerViewController::setRecord, this);
   wait_duration_sub_ = nh_.subscribe("/video_recorder/wait_duration", 1,
                                      &CinematographerViewController::setWaitDuration, this);
@@ -537,6 +542,31 @@ void CinematographerViewController::cancelTransition()
     finished.is_finished = true;
     finished_rendering_trajectory_pub_.publish(finished);
     render_frame_by_frame_ = false;
+  }
+}
+
+void CinematographerViewController::enableDisplaysCallback(const rviz_cinematographer_msgs::EnableDisplaysConstPtr& ed_ptr)
+{
+  DisplayGroup* group = this->context_->getRootDisplayGroup();
+  if (!group)
+  {
+    ROS_ERROR("No display group!");
+  }
+  else
+  {
+    std::unordered_set<std::string> to_enable(ed_ptr->to_enable.begin(), ed_ptr->to_enable.end());
+    std::unordered_set<std::string> to_disable(ed_ptr->to_disable.begin(), ed_ptr->to_disable.end());
+    for (int d = 0; d < group->numDisplays(); ++d)
+    {
+      Display* display = group->getDisplayAt(d);
+      if (!display)
+      {
+        std::cerr << "Display " << d << ": NULL" << std::endl;
+        continue;
+      }
+      if (to_disable.find(display->getNameStd()) != to_disable.end()) { display->setEnabled(false); }
+      if (to_enable.find(display->getNameStd()) != to_enable.end()) { display->setEnabled(true); }
+    }
   }
 }
 

@@ -7,11 +7,11 @@ add_compile_options(-std=c++11)
 find_package(OpenCV REQUIRED)
 include_directories(${OpenCV_INCLUDE_DIRS})
 
-find_package(cmake_modules REQUIRED)
-find_package(Eigen REQUIRED)
+find_package(Eigen3 REQUIRED)
 find_package(Boost REQUIRED system filesystem)
 
 # Ogre
+find_package(PkgConfig REQUIRED)
 pkg_check_modules(OGRE OGRE)
 
 add_definitions(-DQT_NO_KEYWORDS)

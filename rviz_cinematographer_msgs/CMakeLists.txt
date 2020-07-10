@@ -19,6 +19,7 @@ add_message_files(
 	 FILES
    CameraMovement.msg
    CameraTrajectory.msg
+   EnableDisplays.msg
    Record.msg
    Finished.msg
    Wait.msg

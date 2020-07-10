@@ -56,6 +56,7 @@
 
 #include <rviz_cinematographer_msgs/CameraMovement.h>
 #include <rviz_cinematographer_msgs/CameraTrajectory.h>
+#include <rviz_cinematographer_msgs/EnableDisplays.h>
 #include <rviz_cinematographer_msgs/Record.h>
 #include <rviz_cinematographer_msgs/Finished.h>
 #include <rviz_cinematographer_msgs/Wait.h>
@@ -268,6 +269,12 @@ protected:  //methods
   /** @brief Update the position of the attached_scene_node_ in the current frame. */
   void updateAttachedSceneNode();
 
+  /** @brief (De)Activate displays from incoming EnableDisplays.
+   *
+   * @param[in] ed_ptr  incoming EnableDisplays msg.
+   */
+  void enableDisplaysCallback(const rviz_cinematographer_msgs::EnableDisplaysConstPtr& ed_ptr);
+
   /** @brief Initiate camera motion from incoming CameraTrajectory.
    *
    * @param[in] ct_ptr  incoming CameraTrajectory msg.
@@ -374,6 +381,7 @@ protected:    //members
 
   QCursor interaction_disabled_cursor_;         ///< A cursor for indicating mouse interaction is disabled.
 
+  ros::Subscriber enable_sub_;
   ros::Subscriber trajectory_sub_;
   ros::Subscriber record_params_sub_;
   ros::Subscriber wait_duration_sub_;
